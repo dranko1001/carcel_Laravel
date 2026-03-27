@@ -15,7 +15,8 @@ Schema::create('visits', function (Blueprint $table) {
     $table->id();
     $table->foreignId('prisoner_id')->constrained();
     $table->foreignId('visitor_id')->constrained();
-    $table->foreignId('user_id'); // El guardia que aprueba
+    $table->string('relationship'); // Relación con el prisionero
+    $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // El guardia que aprueba
     $table->dateTime('start_time');
     $table->dateTime('end_time');
     $table->timestamps();
