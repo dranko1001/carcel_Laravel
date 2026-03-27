@@ -11,12 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // CAMBIO: Usamos 'create' y agregamos los campos base de Laravel
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name'); // Nombre completo del guardia/admin
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // TUS CAMPOS PERSONALIZADOS:
+            $table->string('identification_number')->unique();
+            $table->enum('role', ['admin', 'guard'])->default('guard');
+            $table->boolean('is_active')->default(true);
+            
             $table->rememberToken();
             $table->timestamps();
         });
