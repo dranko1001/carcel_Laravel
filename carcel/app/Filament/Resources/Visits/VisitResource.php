@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Visits;
 
 use App\Filament\Resources\Visits\Pages\CreateVisit;
@@ -17,8 +16,12 @@ use Filament\Tables\Table;
 class VisitResource extends Resource
 {
     protected static ?string $model = Visit::class;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $modelLabel = 'Visita';
+    protected static ?string $pluralModelLabel = 'Visitas';
+    protected static ?string $navigationLabel = 'Visitas';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -32,9 +35,7 @@ class VisitResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

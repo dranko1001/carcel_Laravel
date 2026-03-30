@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Visits\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -14,41 +13,51 @@ class VisitsTable
     {
         return $table
             ->columns([
-                TextColumn::make('prisoner_id')
-                    ->numeric()
+                TextColumn::make('id')
+                    ->label('ID')
                     ->sortable(),
-                TextColumn::make('visitor_id')
-                    ->numeric()
+
+                TextColumn::make('prisoner.full_name')
+                    ->label('Prisionero')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('relationship')
+
+                TextColumn::make('visitor.full_name')
+                    ->label('Visitante')
                     ->searchable(),
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+
+                TextColumn::make('relationship')
+                    ->label('Relación')
+                    ->searchable(),
+
+                TextColumn::make('officer.name')
+                    ->label('Guardia')
+                    ->searchable(),
+
                 TextColumn::make('start_time')
-                    ->dateTime()
+                    ->label('Inicio')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
+
                 TextColumn::make('end_time')
-                    ->dateTime()
+                    ->label('Fin')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Registrado')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->defaultSort('start_time', 'desc')
+            ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Editar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Eliminar seleccionados'),
                 ]),
             ]);
     }
