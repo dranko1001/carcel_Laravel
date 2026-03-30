@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Visitors\Schemas;
 
 use Filament\Forms\Components\TextInput;
@@ -12,9 +11,16 @@ class VisitorForm
         return $schema
             ->components([
                 TextInput::make('full_name')
-                    ->required(),
+                    ->label('Nombre Completo')
+                    ->required()
+                    ->maxLength(255),
+
                 TextInput::make('identification_number')
-                    ->required(),
+                    ->label('Número de Identificación')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(20)
+                    ->numeric(),
             ]);
     }
 }

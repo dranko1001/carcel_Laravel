@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Visitors\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -14,28 +13,33 @@ class VisitorsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+
                 TextColumn::make('full_name')
-                    ->searchable(),
+                    ->label('Nombre Completo')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('identification_number')
+                    ->label('Número de Identificación')
                     ->searchable(),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Registrado')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->defaultSort('full_name')
+            ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Editar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Eliminar seleccionados'),
                 ]),
             ]);
     }
