@@ -37,7 +37,10 @@ class VisitorResource extends Resource
     {
         return [];
     }
-
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'guard';
+    }
     public static function getPages(): array
     {
         return [

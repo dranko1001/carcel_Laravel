@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -7,6 +6,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -15,38 +15,68 @@ class UsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
+                TextColumn::make('id')
+                    ->label('ID')
                     ->sortable(),
-                TextColumn::make('identification_number')
+
+                TextColumn::make('name')
+                    ->label('Nombre Completo')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('email')
+                    ->label('Correo')
                     ->searchable(),
+
+                TextColumn::make('identification_number')
+                    ->label('Identificación')
+                    ->searchable(),
+
                 TextColumn::make('role')
-                    ->badge(),
+                    ->label('Rol')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'admin' => 'warning',
+                        'guard' => 'success',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'admin' => 'Administrador',
+                        'guard' => 'Guardia',
+                        default => $state,
+                    }),
+
                 IconColumn::make('is_active')
+                    ->label('Activo')
                     ->boolean(),
+
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Registrado')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('name')
             ->filters([
-                //
+                SelectFilter::make('role')
+                    ->label('Rol')
+                    ->options([
+                        'admin' => 'Administrador',
+                        'guard' => 'Guardia',
+                    ]),
+                SelectFilter::make('is_active')
+                    ->label('Estado')
+                    ->options([
+                        '1' => 'Activo',
+                        '0' => 'Inactivo',
+                    ]),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Editar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Eliminar seleccionados'),
                 ]),
             ]);
     }

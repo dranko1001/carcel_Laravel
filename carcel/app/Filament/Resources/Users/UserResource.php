@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources\Users;
 
 use App\Filament\Resources\Users\Pages\CreateUser;
@@ -17,10 +16,12 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $modelLabel = 'Guardia';
+    protected static ?string $pluralModelLabel = 'Guardias';
+    protected static ?string $navigationLabel = 'Guardias';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Schema $schema): Schema
     {
@@ -34,11 +35,12 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
-
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'admin';
+    }
     public static function getPages(): array
     {
         return [

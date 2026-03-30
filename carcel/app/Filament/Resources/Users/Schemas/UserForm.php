@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -15,23 +13,45 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->label('Nombre Completo')
+                    ->required()
+                    ->maxLength(255),
+
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Correo Electrónico')
                     ->email()
-                    ->required(),
-                DateTimePicker::make('email_verified_at'),
-                TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
+
                 TextInput::make('identification_number')
-                    ->required(),
+                    ->label('Número de Identificación')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->numeric()
+                    ->maxLength(20),
+
+                TextInput::make('password')
+                    ->label('Contraseña')
+                    ->password()
+                    ->required(fn(string $operation) => $operation === 'create')
+                    ->dehydrateStateUsing(fn($state) => !empty($state) ? bcrypt($state) : null)
+                    ->dehydrated(fn($state) => !empty($state))
+                    ->hint('Dejar en blanco para no cambiar la contraseña'),
+
                 Select::make('role')
-                    ->options(['admin' => 'Admin', 'guard' => 'Guard'])
+                    ->label('Rol')
+                    ->options([
+                        'admin' => 'Administrador',
+                        'guard' => 'Guardia',
+                    ])
                     ->default('guard')
                     ->required(),
+
                 Toggle::make('is_active')
-                    ->required(),
+                    ->label('Activo')
+                    ->default(true)
+                    ->helperText('Desactivar impide el acceso al sistema'),
             ]);
     }
 }
