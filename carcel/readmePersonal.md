@@ -157,7 +157,7 @@ Abrir en el navegador: `http://localhost:8000/admin`
 
 **visitors:** `id`, `full_name`, `identification_number`
 
-**visits:** `id`, `prisoner_id`, `visitor_id`, `relationship`, `user_id`, `start_time`, `end_time`
+**visits:** `id`, `prisoner_id`, `visitor_id`, `relationship`, `user_id`, `start_time`, `end_time`, `status` (pendiente/completada/cancelada)
 
 **login_logs:** `id`, `user_id`, `login_at`
 
@@ -183,7 +183,10 @@ app/Filament/
     ├── Visits/
     │   ├── VisitResource.php
     │   ├── Schemas/VisitForm.php
-    │   └── Tables/VisitsTable.php
+    │   ├── Tables/VisitsTable.php
+    │   └── Pages/
+    │       ├── CreateVisit.php     ← Validación de duplicados y estado inicial
+    │       └── EditVisit.php       ← Deshabilitado (no se puede editar)
     └── Users/
         ├── UserResource.php
         ├── Schemas/UserForm.php
@@ -224,8 +227,23 @@ public static function canAccess(): bool
 
 ### Visitas
 - Las visitas **solo se permiten los domingos** de **14:00 a 17:00**
-- Un prisionero no puede tener dos visitas en el mismo horario
-- La validación se realiza en `VisitForm.php` con reglas personalizadas de Laravel
+- Un prisionero **no puede tener dos visitas activas** (pendiente o completada) en el mismo horario
+- Si existe una visita **cancelada** en ese horario, sí se puede registrar una nueva
+- **No se pueden registrar visitas en fechas pasadas**
+- **No se pueden registrar visitas con más de 3 meses de anticipación**
+- Las visitas se crean siempre con estado `pendiente`
+- **No se pueden editar** una vez creadas — solo cambiar estado
+- El guardia puede **cancelar** una visita pendiente desde la tabla con confirmación
+- Una vez **cancelada**, no se puede revertir a ningún otro estado
+- Cuando la hora de fin de una visita pasa, su estado cambia automáticamente a `completada`
+
+### Estados de Visita
+
+| Estado | Color | Descripción |
+|--------|-------|-------------|
+| `pendiente` | 🟡 Amarillo | Visita programada, aún no ocurrida |
+| `completada` | 🟢 Verde | Visita realizada (automático al pasar la hora) |
+| `cancelada` | 🔴 Rojo | Visita cancelada por el guardia (irreversible) |
 
 ### Visitantes
 - El número de identificación debe ser **único** en el sistema
@@ -287,6 +305,26 @@ Event::listen(Login::class, LogSuccessfulLogin::class);
 
 ---
 
+## 🗃️ Migraciones Importantes
+
+### Migración de estado en visitas
+Se agregó el campo `status` a la tabla `visits` mediante una migración independiente:
+
+```bash
+php artisan make:migration add_status_to_visits_table
+```
+
+```php
+// En up():
+$table->enum('status', ['pendiente', 'completada', 'cancelada'])
+      ->default('pendiente')
+      ->after('end_time');
+```
+
+> ⚠️ Si se ejecuta `migrate:fresh`, recordar recrear los usuarios admin y guardia con tinker (ver pasos 6 y 7).
+
+---
+
 ## ✅ Estado Actual del Proyecto
 
 ### Completado
@@ -298,23 +336,33 @@ Event::listen(Login::class, LogSuccessfulLogin::class);
 - [x] `.env` configurado con MySQL
 - [x] Base de datos `carcel_db` creada
 - [x] Migraciones ejecutadas (users, prisoners, visitors, visits, login_logs)
+- [x] Campo `status` agregado a tabla `visits` (pendiente/completada/cancelada)
 - [x] Filament 5.4 instalado y panel `/admin` funcionando
 - [x] `barryvdh/laravel-dompdf` instalado
 - [x] `maatwebsite/excel` instalado
 - [x] Usuario admin creado en base de datos
 - [x] Resource de Prisioneros — CRUD completo en español con validaciones
 - [x] Resource de Visitantes — CRUD completo, identificación única
-- [x] Resource de Visitas — CRUD con selectores de nombres, validación de horario dominical
+- [x] Resource de Visitas — formulario con selectores de nombres y validaciones completas
+- [x] Validación: solo domingos de 14:00 a 17:00
+- [x] Validación: no fechas pasadas
+- [x] Validación: máximo 3 meses a futuro
+- [x] Validación: no duplicados de horario por prisionero (excluyendo canceladas)
+- [x] Estados de visita con badge de colores (pendiente/completada/cancelada)
+- [x] Botón "Cancelar visita" en tabla — solo visible en visitas pendientes
+- [x] Cancelación irreversible con confirmación modal
+- [x] Auto-completar visitas cuya hora de fin ya pasó
+- [x] Visitas no editables una vez creadas
 - [x] Resource de Guardias — CRUD con toggle activo/inactivo y badges de rol
 - [x] Control de acceso por rol (admin vs guardia) mediante `canAccess()`
 - [x] Registro automático de login en tabla `login_logs`
+- [x] Listener `LogSuccessfulLogin` conectado en `AppServiceProvider`
+- [x] Modelo `LoginLog` creado con relación a `User`
 - [x] Página de Reportes con filtros por rango de fechas
-- [x] Exportación a Excel funcional
+- [x] Exportación a Excel funcional con encabezados y estilos
 - [x] Exportación a PDF funcional (dompdf con DejaVu Sans, UTF-8 sin BOM)
 
 ### Pendiente — rama `cris`
-- [ ] Validación de duplicados en visitas (mismo prisionero, mismo horario)
-- [ ] Alerta de visitante duplicado al registrar
 - [ ] Diseño mejorado con Tailwind
 
 ---
