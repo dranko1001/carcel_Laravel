@@ -14,7 +14,8 @@ class Visit extends Model
         'relationship',
         'user_id',
         'start_time',
-        'end_time'
+        'end_time',
+        'status',
     ];
 
     public function officer()

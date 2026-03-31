@@ -9,7 +9,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Validation\ValidationException;
 
 class VisitForm
 {
@@ -45,24 +44,32 @@ class VisitForm
                     ->required()
                     ->seconds(false)
                     ->minutesStep(30)
+                    ->minDate(now()->startOfDay())
+                    ->maxDate(now()->addMonths(3))
                     ->rules([
                         function () {
                             return function (string $attribute, $value, $fail) {
                                 $date = \Carbon\Carbon::parse($value);
 
-                                // Debe ser domingo
                                 if ($date->dayOfWeek !== \Carbon\Carbon::SUNDAY) {
                                     $fail('Las visitas solo se permiten los domingos.');
                                     return;
                                 }
 
-                                // Debe estar entre 14:00 y 17:00
-                                $hour = (int) $date->format('H');
-                                $minute = (int) $date->format('i');
-                                $timeInMinutes = $hour * 60 + $minute;
-
+                                $timeInMinutes = (int) $date->format('H') * 60 + (int) $date->format('i');
                                 if ($timeInMinutes < 840 || $timeInMinutes > 1020) {
                                     $fail('El horario de visitas es de 14:00 a 17:00.');
+                                    return;
+                                }
+
+                                if ($date->isPast()) {
+                                    $fail('No se puede registrar una visita en una fecha pasada.');
+                                    return;
+                                }
+
+                                if ($date->isAfter(now()->addMonths(3))) {
+                                    $fail('No se puede registrar una visita con más de 3 meses de anticipación.');
+                                    return;
                                 }
                             };
                         },
@@ -77,10 +84,7 @@ class VisitForm
                         function () {
                             return function (string $attribute, $value, $fail) {
                                 $date = \Carbon\Carbon::parse($value);
-
-                                $hour = (int) $date->format('H');
-                                $minute = (int) $date->format('i');
-                                $timeInMinutes = $hour * 60 + $minute;
+                                $timeInMinutes = (int) $date->format('H') * 60 + (int) $date->format('i');
 
                                 if ($timeInMinutes < 840 || $timeInMinutes > 1020) {
                                     $fail('El horario de visitas es de 14:00 a 17:00.');
