@@ -15,7 +15,6 @@ Schema::create('visitors', function (Blueprint $table) {
     $table->id();
     $table->string('full_name');
     $table->string('identification_number')->unique(); // Para evitar duplicados
-    $table->string('relationship'); // Relación con el prisionero
     $table->timestamps();
 });
     }
