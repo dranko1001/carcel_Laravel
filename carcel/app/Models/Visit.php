@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,18 +9,17 @@ class Visit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'prisoner_id', 
-        'visitor_id', 
-        'user_id', 
-        'start_time', 
-        'end_time'
+        'prisoner_id',
+        'visitor_id',
+        'relationship',
+        'user_id',
+        'start_time',
+        'end_time',
+        'status',
     ];
 
-    // Cambiamos el nombre de 'guard' a 'user' o 'officer'
-    public function officer() 
+    public function officer()
     {
-        // El segundo parámetro 'user_id' le dice a Laravel 
-        // qué columna buscar en la tabla 'visits'
         return $this->belongsTo(User::class, 'user_id');
     }
 

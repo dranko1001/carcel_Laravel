@@ -7,5 +7,9 @@ use App\Http\Controllers\VisitorController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource('prisoners', PrisonerController::class);
-Route::resource('visitors', VisitorController::class);
+use App\Http\Controllers\ReporteController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reporte/excel', [ReporteController::class, 'exportarExcel'])->name('reporte.excel');
+    Route::get('/reporte/pdf', [ReporteController::class, 'exportarPdf'])->name('reporte.pdf');
+});
