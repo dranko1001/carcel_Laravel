@@ -19,6 +19,9 @@ class VisitorForm
                     ->label('Número de Identificación')
                     ->required()
                     ->unique(ignoreRecord: true)
+                    ->validationMessages([
+                        'unique' => 'Ya existe un visitante con este número de identificación. Revise el listado o use el registro existente.',
+                    ])
                     ->maxLength(20)
                     ->numeric(),
             ]);
