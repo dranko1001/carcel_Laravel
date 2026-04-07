@@ -1,0 +1,13 @@
+/**
+ * Tema Filament para la cabecera del dashboard de guardias.
+ *
+ * IMPORTANTE: no usar @import 'tailwindcss' completo aquí. Eso incluye Preflight, que fuerza
+ * `svg { display: block }` en TODO el panel. El sidebar de Filament es flex; con eso los SVG
+ * se estiran al ancho del aside y los iconos parecen “pantalla completa”.
+ *
+ * Solo cargamos theme + utilities (sin capa base / preflight).
+ */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@source '../../views/filament/pages/guard-dashboard-header.blade.php';
