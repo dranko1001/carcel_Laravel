@@ -12,9 +12,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
+
     protected static ?string $model = User::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
 
@@ -36,6 +38,10 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+      public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('role', 'guard');
     }
     public static function canAccess(): bool
     {
