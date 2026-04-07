@@ -5,7 +5,7 @@ use App\Http\Controllers\PrisonerController;
 use App\Http\Controllers\VisitorController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
 use App\Http\Controllers\ReporteController;
 
