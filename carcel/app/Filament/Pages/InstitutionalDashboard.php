@@ -33,7 +33,7 @@ class InstitutionalDashboard extends Dashboard
     }
 
     /**
-     * Quitamos el widget genérico “Filament” a los guardias para que el inicio se vea más serio y local al proyecto.
+     * Quitamos el widget genérico "Filament" y el widget de dashboard de guardias a los guardias para que el inicio se vea más serio y local al proyecto.
      *
      * @return array<class-string<\Filament\Widgets\Widget> | WidgetConfiguration>
      */
@@ -51,7 +51,10 @@ class InstitutionalDashboard extends Dashboard
                     ? $widget->widget
                     : $widget;
 
-                return $class === FilamentInfoWidget::class;
+                return in_array($class, [
+                    FilamentInfoWidget::class,
+                    \App\Filament\Widgets\GuardDashboardWidget::class,
+                ]);
             })
             ->values()
             ->all();
